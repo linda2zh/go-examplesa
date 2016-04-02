@@ -1,5 +1,6 @@
-
 package main
+// Implements an algorithm similar to the Haskell
+// let f (p:as) = p : f [a|a<-as, mod a p > 0] in take 10 $ f [2..]
 
 import "fmt"
 
@@ -21,13 +22,12 @@ func (s baseLL) head() int { return s.fst }
 func (s baseLL) tail() LL  { return baseLL{1 + s.fst} }
 
 type filtLL struct {
-	fst     int
+	baseLL
 	preFilt LL
 	p       int
 }
 
-func (s filtLL) head() int { return s.fst }
-func (s filtLL) tail() LL  { return filter(s.preFilt, s.p) }
+func (s filtLL) tail() LL { return filter(s.preFilt, s.p) }
 
 func filter(in LL, p int) LL {
 	newHead := in.head()
@@ -36,23 +36,22 @@ func filter(in LL, p int) LL {
 		newHead = newRest.head()
 		newRest = newRest.tail()
 	}
-	return filtLL{newHead, newRest, p}
+	return filtLL{baseLL{newHead}, newRest, p}
 }
 
 type recursLL struct {
-	fst     int
+	baseLL
 	preProc LL
 }
 
-func (s recursLL) head() int { return s.fst }
 func (s recursLL) tail() LL {
-	newTail := filter(s.preProc, s.fst)
-	return recursLL{newTail.head(), newTail.tail()}
+	newTail := filter(s.preProc, s.head())
+	return recursLL{baseLL{newTail.head()}, newTail.tail()}
 }
 
 func sieve() LL {
 	l2 := baseLL{2}
-	return recursLL{l2.head(),
+	return recursLL{baseLL{l2.head()},
 		filter(l2.tail(), l2.head())}
 }
 
