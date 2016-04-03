@@ -1,5 +1,5 @@
 package main
-// Implements an algorithm similar to the Haskell
+// Implements an algorithm similar to this Haskell snippet
 // let f (p:as) = p : f [a|a<-as, mod a p > 0] in take 10 $ f [2..]
 
 import "fmt"
@@ -19,7 +19,7 @@ type LL interface {
 }
 
 /*
-A bsaeLL is an infinite list starting at 'fst': [fst..] in Haspell speak.
+A baseLL is an infinite list starting with 'fst': [fst..] in Haspell speak.
 */
 type baseLL struct {
 	fst int
@@ -30,6 +30,7 @@ func (s baseLL) tail() LL  { return baseLL{1 + s.fst} }
 /*
 a filtLL never contains a multiple of p.
 n:[a|a<-as, mod a p > 0]
+The list preFilt may still contain the multiple of p, but will filter them away.
 */
 type filtLL struct {
 	baseLL
@@ -39,7 +40,7 @@ type filtLL struct {
 func (s filtLL) tail() LL { return filter(s.preFilt, s.p) }
 
 /*
-filter removes all multiple of p from the input in.
+filter removes all multiple of 'p' from the input 'in'.
 */
 func filter(in LL, p int) LL {
 	newHead := in.head()
@@ -52,8 +53,8 @@ func filter(in LL, p int) LL {
 }
 
 /*
-a recursLL builds a list where recursively removes all multiple of the first
-element in the tail.
+a recursLL builds a list where recursively all multiple of the first
+element are removed in the tail.
 */
 type recursLL struct {
 	baseLL
@@ -65,7 +66,7 @@ func (s recursLL) tail() LL {
 }
 
 /*
-sieve returns the list of all prime numbered.
+sieve returns the list of all prime numbers.
 */
 func sieve() LL {
 	l2 := baseLL{2}
