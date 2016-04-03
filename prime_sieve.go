@@ -9,26 +9,38 @@ const (
 	verbose = false
 )
 
+/*
+LL is a Lazy Linked List - the name is upcase for readability, not
+for being exported from this package.
+*/
 type LL interface {
 	head() int
 	tail() LL
 }
 
+/*
+A bsaeLL is an infinite list starting at 'fst': [fst..] in Haspell speak.
+*/
 type baseLL struct {
 	fst int
 }
-
 func (s baseLL) head() int { return s.fst }
 func (s baseLL) tail() LL  { return baseLL{1 + s.fst} }
 
+/*
+a filtLL never contains a multiple of p.
+n:[a|a<-as, mod a p > 0]
+*/
 type filtLL struct {
 	baseLL
 	preFilt LL
 	p       int
 }
-
 func (s filtLL) tail() LL { return filter(s.preFilt, s.p) }
 
+/*
+filter removes all multiple of p from the input in.
+*/
 func filter(in LL, p int) LL {
 	newHead := in.head()
 	newRest := in.tail()
@@ -39,16 +51,22 @@ func filter(in LL, p int) LL {
 	return filtLL{baseLL{newHead}, newRest, p}
 }
 
+/*
+a recursLL builds a list where recursively removes all multiple of the first
+element in the tail.
+*/
 type recursLL struct {
 	baseLL
 	preProc LL
 }
-
 func (s recursLL) tail() LL {
 	newTail := filter(s.preProc, s.head())
 	return recursLL{baseLL{newTail.head()}, newTail.tail()}
 }
 
+/*
+sieve returns the list of all prime numbered.
+*/
 func sieve() LL {
 	l2 := baseLL{2}
 	return recursLL{baseLL{l2.head()},
